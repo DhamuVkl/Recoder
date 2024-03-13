@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.view.View;
@@ -69,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
                 // Create a new file descriptor
                 ParcelFileDescriptor parcelFileDescriptor = createAudioFileDescriptor();
 
-                // Set the output file using the file descriptor
+                // Set the output file descriptor
                 if (parcelFileDescriptor != null) {
-                    mediaRecorder.setOutputFile(parcelFileDescriptor.getFileDescriptor(), 0, 0);
+                    mediaRecorder.setOutputFile(parcelFileDescriptor.getFileDescriptor());
                     mediaRecorder.prepare();
                     mediaRecorder.start();
                     isRecording = true;
@@ -89,8 +90,10 @@ public class MainActivity extends AppCompatActivity {
     private ParcelFileDescriptor createAudioFileDescriptor() {
         ContentResolver contentResolver = getContentResolver();
         ContentValues values = new ContentValues();
-        values.put(MediaStore.Audio.Media.DISPLAY_NAME, "audio_record_" + System.currentTimeMillis() + ".3gp");
-        values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/3gpp");
+        // Set the display name with the desired extension
+        values.put(MediaStore.Audio.Media.DISPLAY_NAME, "audio_record_" + System.currentTimeMillis() + ".mp3");
+        // Explicitly set the MIME type to "audio/mpeg"
+        values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg");
         values.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music/Recordings");
 
         Uri audioUri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
@@ -106,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
 
         return parcelFileDescriptor;
     }
+
+
+
 
     private void stopMediaRecorder() {
         if (isRecording) {
